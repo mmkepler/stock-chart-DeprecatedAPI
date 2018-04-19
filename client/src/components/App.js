@@ -23,22 +23,30 @@ class App extends Component {
       
     }
   }
+  
 
-      getData = (url) => {
-      axios.get(url)
-      .then((response) => {
-        this.setState({
-          data: response
-        });
-      })
-      .catch((err) => {
-        if(err){
-          return(
-            <div>Error retrieving data. Please refresh and try again</div>
-          );
-        }
+  getData = (url) => {
+    const options = {
+    method: 'GET',
+    headers: {"Access-Control-Allow-Origin": "*",
+      "origin": "https://polar-tundra-85199.herokuapp.com/"
+    },
+    url: url
+  };
+    axios(options)
+    .then((response) => {
+      this.setState({
+        data: response
       });
-    }
+    })
+    .catch((err) => {
+      if(err){
+        return(
+          <div>Error retrieving data. Please refresh and try again</div>
+        );
+      }
+    });
+  }
 
   render() {
     return (

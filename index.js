@@ -3,11 +3,12 @@ const path = require('path');
 const mongodb = require('mongodb').MongoClient;
 const mongoose = require('mongoose');
 const axios = require('axios');
+require('dotenv').config();
 var cors = require('cors')
 const app = express();
 app.use(cors());
 
-app.use();
+
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 
