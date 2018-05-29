@@ -20,8 +20,8 @@ app.use(express.static(path.join(__dirname, 'client','build')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-
-// Mongoose Connection ==========
+//================================
+// Mongoose Connection ===========
 const uri = 'mongodb://'+process.env.USER_NAME+':'+process.env.PASS+'@'+process.env.HOST+':'+process.env.DB_PORT+'/'+process.env.DB;
 
 mongoose.connect(uri).catch((err) => {console.log(err)});
@@ -29,6 +29,8 @@ mongoose.connection.on('connected', function () {
   console.log('Mongoose is connected');
 });
 
+//============================
+// Helper Functions ==========
 
 makeUrl = (data) => {
   let temp = '';
@@ -52,23 +54,16 @@ makeUrl = (data) => {
   }
   }
 
-  getData = (url) => {
-    axios.get(url)
-    .then((items) => {
-      return items;
-    })
-    .catch((err) => {
-      return err;
-    });
-  }
 
 
-// Routes ===============
+//===================
+// Routes ===========
 
 app.all('*', function(req, res, next) {
    res.header("Access-Control-Allow-Origin", "*");
    next();
 });
+
 
 app.get('/api/stocks', (req, res) => {
   Stocks.find({}, (err, data) => {
@@ -87,9 +82,6 @@ app.get('/api/stocks', (req, res) => {
 
 
 
-
-
-
 app.post('/api/data', (req, res) => {
   let temp = makeUrl(req.body[0]);
   //console.log(temp);
@@ -105,25 +97,28 @@ app.post('/api/data', (req, res) => {
 
 
 
-
 app.post('/api/search', (req,res) => {
   //search for name
-  var test;
+  let data;
   let temp = req.body.data;
   //console.log("temp", temp);
 
   Stocks.findOne({name: temp}, (err, info) => {
     if(err){
-      var test = "error";
-      res.send(test);
+      data = "error";
+      console.log('error inside search for single stock', err);
+      res.send(data);
     }else if(info === null){
-      //test = "no";
+      //console.log("inside search for single stock if null", info);
+      data = info;
+      return data;
     } else {
       test = "yes"
-      res.send(test);
+      console.log("Yes", info);
+      data = 'yes';
+      res.send(data);
     }
 
-   return test
   }).then((data) => {
     console.log("try", data);
     if(data === null){
@@ -136,18 +131,20 @@ app.post('/api/search', (req,res) => {
         var newStock = new Stocks();
         newStock.name = temp;
         newStock.save((err) => {
-          if(err) console.log("single save error", err);
+          if(err) {
+            console.log("single save error", err);
+            res.send("error");
+          }
           console.log("saved single");
+          
         });
 
         let newName = item.data.quote.symbol;
        
-       let newObj = {};
-       newObj[newName] = item.data;
-       console.log('new', newObj);
-        
-        
-        //res.send({});
+        let newObj = {};
+        newObj[newName] = item.data;
+        console.log('new', newObj);
+          
         res.send(newObj);
       })
       .catch((err) => {
@@ -158,6 +155,7 @@ app.post('/api/search', (req,res) => {
   });
 
 });
+
 
 
 app.post('/api/delete', (req, res) => {
@@ -177,7 +175,7 @@ app.post('/api/delete', (req, res) => {
 });
 
 
-// Sockets ==========
+// Sockets ===========
 
 /*io.on('connection', (socket) => {
   console.log('a user connected');

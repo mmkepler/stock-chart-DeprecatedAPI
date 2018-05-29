@@ -6,45 +6,6 @@ import Footer from './Footer';
 import '../App.css';
 
 class App extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      active: [],
-      data: []
-    };
- this.getData = this.getData.bind(this);
-  }
-
-  componentWillMount(){
-      if(this.state.active.length === 0){
-      this.setState({
-        active: ['FB', 'GOOGL', 'AAPL', 'ADBE', 'TWTR']
-      });
-      
-    }
-  }
-  
-
-  getData = (url) => {
-    const options = {
-      method: 'GET',
-      url: url,
-      headers: {"Access-Control-Allow-Origin": "*"}
-    };
-    axios.get(url)
-    .then((response) => {
-      this.setState({
-        data: response
-      });
-    })
-    .catch((err) => {
-      if(err){
-        return(
-          <div>Error retrieving data. Please refresh and try again</div>
-        );
-      }
-    });
-  }
 
   render() {
     return (

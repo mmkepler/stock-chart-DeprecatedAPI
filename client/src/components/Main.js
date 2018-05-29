@@ -1,9 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-//import stockExample from '../models/stock-example';
-//import dataExample from '../models/data-example';
-
-
 
 
 class Main extends React.Component{
@@ -14,35 +10,43 @@ class Main extends React.Component{
       stocks: [],
       data: {},
       input: '',
-      original: true
+      original: true,
+      message: ''
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.delete = this.delete.bind(this);
   }
 
+//============================
+// Helper Functions ==========
   handleChange(e) {
     this.setState({input: e.target.value}, () => console.log("input", this.state.input));
   }
 
 
   handleSubmit(e) {
-   
+    /*  When data is sent back: error, fake, object, yes; make sure error in db has its message*/
     e.preventDefault();
+    this.setState({input: ''});
     var newStock = (this.state.input).toLowerCase().replace(/ /g,'');
-    //console.log(newStock);
-    //console.log(typeof newStock);
+    console.log('input submitted new Stock', newStock);
+    console.log('typeof newStock after search', typeof newStock);
     axios.post('/api/search', {data: newStock})
     .then((res) => {
-      console.log("search result", res.data);
+      console.log("search result for newStock", res.data);
 
-      if(res.data === "yes"){
+      if(res.data === 'yes'){
         //Add message it already exists
         
-        console.log("does exist");
+        this.setState({message: 'This stock has already been added'});
+        console.log('does exist');
       }else if(res.data === "fake"){
         console.log("is not real");
-        
+        this.setState({message: 'This stock symbol does not exist'})
+      }else if(res === "error"){
+        console.log("error retrieving or saving");
+        this.setState({message: 'Error. Please refresh and try again.'});
       }else{
         console.log("doesn't exist");
         var currentStocks = this.state.stocks[0];
@@ -51,25 +55,15 @@ class Main extends React.Component{
         
         currentStocks.push(newStock);
         Object.assign(currentData, dataValue);
-        this.setState({stocks: currentStocks, data: currentData, input: ''}, () => console.log(this.state));
-        
-        //currentStocks.push(newStock);
-        //console.log("current stocks after", currentStocks);
-        //console.log("stocks after push", currentStocks);
-        //currentData.push(res.data);
-        //this.setState({stocks: currentStocks, data: currentData}, () => {
-          //console.log("state updated", this.state);
-        //});
-        //let newData = {newStock: res.data}
-        //Object.assign(currentData, newData);
-        //console.log("fixed data", currentData);
+        this.setState({stocks: currentStocks, data: currentData, message: ''}, () => console.log("on return from /api/search the array of state", this.state));
+
       }
      
 
     })
     .catch((err) => {
       console.log("err in single request search", err);
-      //needs a message
+      this.setState({message: 'Error. Please refresh and try again.'});
     });
   }
 
@@ -81,16 +75,16 @@ class Main extends React.Component{
     let item = this.state.stocks[0];
     //console.log(item);
     let removeItem = item[key];
-    console.log(removeItem);
+    console.log('remove item', removeItem);
     axios.post('/api/delete' , {name: removeItem})
     .then((res) => {
-      console.log(res);
+      console.log('post to remove item response', res);
       let data = this.state.data;
 
       let stocks = this.state.stocks[0].slice(key, 1);
       
       delete data[removeItem];
-      console.log(data, stocks)
+      console.log("data", data, "stocks", stocks);
       //this.setState({stocks});
 
     })
@@ -109,18 +103,12 @@ class Main extends React.Component{
         return names
       })
       .then((names) => {
-        //console.log("something", names);
-        //var temp = new URL(this.makeUrl(names));
-        //console.log('url', temp);
-        //let data = this.getData(temp);
-
         axios.post('/api/data', names)
         .then((info) => {
           //console.log(info.data);
           this.setState({data: info.data}, () => {/*console.log(this.state)*/})
-          
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log('err in post to /api/data', err));
 
       });
      }
@@ -131,15 +119,18 @@ class Main extends React.Component{
   render(){
     var list = this.state.data;
     var listData = Object.keys(list).map(i => list[i]);
-    console.log(listData);
+    var message = this.state.message;
 
-    console.log("listData", listData);
+    console.log("listData in render function", listData);
     return(
       <div className="main-body">
       <div className='jumbotron'>
         <div className='chart'>
           Chart Stuff goes here
         </div>
+        </div>
+        <div className='message'>
+        <p>{message}</p>
         </div>
         <div className="row">
 
@@ -178,11 +169,8 @@ class Main extends React.Component{
               </div>
             );
           })}
-          
-          
 
         </div>
-
 
       </div>
     );

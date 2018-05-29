@@ -3,13 +3,15 @@ body{
   height: 100%;
   width: 100%;
   text-align: center;
+  box-sizing: border-box;
 }
 .App {
   text-align: center;
+  margin-top: 40px;
 }
 
-.chart {
-  margin: 20px;
+.jumbotron {
+ margin-bottom: 0;
 }
 
 .footer {
@@ -20,6 +22,12 @@ body{
   line-height: 60px;
   background-color: #f5f5f5;
   color: black;
+}
+
+.navbar {
+  display: inline-block;
+  width: 100%;
+  
 }
 
 /* input */
@@ -34,9 +42,16 @@ body{
 }
 
 .section {
+  margin-bottom: 10px;
+}
 
- 
-  
+.message {
+  min-height: 20px;
+  margin: 10px;
+}
+.message p {
+ font-size: 20px;
+ margin: 0;
 }
 
 .card-title {
@@ -50,9 +65,8 @@ body{
 
 form {
   margin: auto;
-  
-
 }
+
 input.form-control {
   height: 34px;
 }
@@ -65,16 +79,6 @@ button.btn.btn-outline-secondary {
   padding: 8px 10px;
 }
 
-.outer {
-  height: 100%;
-  display: table;
-  margin: auto;
-}
-.inner {
-  display: table-cell;
-  vertical-align: middle;
-
-}
 
 .footer-text {
   margin: 0;
