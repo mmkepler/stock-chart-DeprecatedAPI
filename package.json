@@ -2,22 +2,25 @@
   "name": "stocks",
   "version": "1.0.0",
   "description": "Free Code Camp Chart The Stock Maket Project",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "heroku-postbuild": "cd client && yarn --production=false && yarn run build"
+    "client": "cd client && yarn start",
+    "server": "nodemon server.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
   },
   "author": "Melissa Kepler",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
+    "http": "0.0.0",
     "mongodb": "^3.0.6",
     "mongoose": "^5.0.15",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "socket.io": "^2.1.1"
   },
   "repository": {
     "type": "git",
@@ -25,5 +28,8 @@
   },
   "engines": {
     "node": "9.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
   }
 }

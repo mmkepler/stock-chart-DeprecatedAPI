@@ -27,13 +27,11 @@ class App extends Component {
 
   getData = (url) => {
     const options = {
-    method: 'GET',
-    headers: {"Access-Control-Allow-Origin": "*",
-      "origin": "https://polar-tundra-85199.herokuapp.com/"
-    },
-    url: url
-  };
-    axios(options)
+      method: 'GET',
+      url: url,
+      headers: {"Access-Control-Allow-Origin": "*"}
+    };
+    axios.get(url)
     .then((response) => {
       this.setState({
         data: response
