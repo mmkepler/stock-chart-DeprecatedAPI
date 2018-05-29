@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import * as d3 from "d3"
 
 
 class Main extends React.Component{
@@ -28,6 +29,7 @@ class Main extends React.Component{
   handleSubmit(e) {
     /*  When data is sent back: error, fake, object, yes; make sure error in db has its message*/
     e.preventDefault();
+    //document.activeElement.blur();
     this.setState({input: ''});
     var newStock = (this.state.input).toLowerCase().replace(/ /g,'');
     console.log('input submitted new Stock', newStock);
@@ -49,7 +51,7 @@ class Main extends React.Component{
         this.setState({message: 'Error. Please refresh and try again.'});
       }else{
         console.log("doesn't exist");
-        var currentStocks = this.state.stocks[0];
+        var currentStocks = [this.state.stocks[0]];
         var currentData = this.state.data;
         let dataValue = res.data; 
         
@@ -68,27 +70,39 @@ class Main extends React.Component{
   }
 
   delete(key){
-    //e.preventDefault();
-    //console.log(key);
-    //let index = key;
-    //console.log('index', index);
-    let item = this.state.stocks[0];
+    document.activeElement.blur();
+    let index = key;
+    let list = [...this.state.stocks[0]];
     //console.log(item);
-    let removeItem = item[key];
+    let removeItem = list[index];
     console.log('remove item', removeItem);
     axios.post('/api/delete' , {name: removeItem})
     .then((res) => {
-      console.log('post to remove item response', res);
-      let data = this.state.data;
 
-      let stocks = this.state.stocks[0].slice(key, 1);
+      if(res.data === 'NotDeleted'){
+        //add message
+        this.setState({message: 'Error. Please refresh and try again.'});
+      } else {
+        console.log('post to remove item response', res);
+        let updatedData = this.state.data;
+        delete updatedData[removeItem.toUpperCase()];
+        //console.log("data", data);
+
+        let remove = (array, item) => {
+          return array.filter((e) => e !==  item);
+        }
+        let updatedStocks = remove(list, removeItem);
+        console.log('updatedStocks', updatedStocks);
+        this.setState({stocks: updatedStocks, data: updatedData});
+      }
       
-      delete data[removeItem];
-      console.log("data", data, "stocks", stocks);
-      //this.setState({stocks});
+      
 
     })
-    .catch();
+    .catch((err) => {
+      if(err) console.log('error requesting a delete', err);
+      this.setState({message: 'Error. Please refresh and try again.'});
+    });
 
   }
 
@@ -140,11 +154,11 @@ class Main extends React.Component{
                   <h5 className="modal-title">Add a Stock</h5>
                 </div>
               <div className="card-body">
-                <form /*action='/api/addstock' method='post'*/ onSubmit={this.handleSubmit} id='input'>
+                <form /*action='/api/addstock' method='post'*/  id='input'>
                   <div className='input-group mb-3'>
                     <input type='text' className="form-control" value={this.state.input} maxLength="10" pattern='[A-Za-z]+' aria-label='Add a stock' aria-describedby='basic-addon2' onChange={this.handleChange} />
                       <div className='input-group-append'>
-                        <button className='btn btn-outline-secondary' >&nbsp;+&nbsp;</button>
+                        <button className='btn btn-outline-secondary' type='button' onClick={this.handleSubmit}>&nbsp;+&nbsp;</button>
                       </div>
                     </div>
                 </form>
@@ -158,7 +172,7 @@ class Main extends React.Component{
                 <div className="card bg-light mb-3" >
                   <div className="modal-header">
                   <h5 className="modal-title">{item.quote.symbol}</h5>
-                  <button type="button"  className="close" aria-label="Close"  onClick={() => this.delete(index)} data-toggle="close">
+                  <button type="button"  className="close" aria-label="Close" onClick={() => this.delete(index)} data-toggle="close">
                     <span aria-hidden="true" >&times;</span>
                   </button>
                 </div>

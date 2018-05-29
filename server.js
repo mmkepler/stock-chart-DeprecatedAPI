@@ -165,6 +165,7 @@ app.post('/api/delete', (req, res) => {
   removeItem[name] = req.body.name;
   console.log(removeItem);
   Stocks.deleteOne(removeItem, (err) => {
+    console.log("if err in delete", err);
     if(err){
       console.log("deleting error", err);
       res.send("NotDeleted")
