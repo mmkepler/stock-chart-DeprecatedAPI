@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
-import * as d3 from "d3"
+import * as d3 from "d3";
+import Stock from './Stock';
 
 
 class Main extends React.Component{
@@ -16,7 +17,7 @@ class Main extends React.Component{
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.delete = this.delete.bind(this);
+    //this.deleteEntry = this.deleteEntry.bind(this);
   }
 
 //============================
@@ -31,7 +32,7 @@ class Main extends React.Component{
     e.preventDefault();
     //document.activeElement.blur();
     this.setState({input: ''});
-    var newStock = (this.state.input).toLowerCase().replace(/ /g,'');
+    var newStock = (this.state.input).toUpperCase().replace(/ /g,'');
     console.log('input submitted new Stock', newStock);
     console.log('typeof newStock after search', typeof newStock);
     axios.post('/api/search', {data: newStock})
@@ -51,7 +52,7 @@ class Main extends React.Component{
         this.setState({message: 'Error. Please refresh and try again.'});
       }else{
         console.log("doesn't exist");
-        var currentStocks = [this.state.stocks[0]];
+        var currentStocks = [...this.state.stocks[0]];
         var currentData = this.state.data;
         let dataValue = res.data; 
         
@@ -69,14 +70,16 @@ class Main extends React.Component{
     });
   }
 
-  delete(key){
-    document.activeElement.blur();
-    let index = key;
-    let list = [...this.state.stocks[0]];
-    //console.log(item);
-    let removeItem = list[index];
-    console.log('remove item', removeItem);
-    axios.post('/api/delete' , {name: removeItem})
+  deleteEntry(item){
+    console.log('delete item', item)
+    let stock = item;
+    //document.activeElement.blur();
+    //let index = key;
+    let list = this.state.stocks;
+    console.log('delete list', list);
+    //let removeItem = list[index];
+    //console.log('remove item', removeItem);
+    axios.post('/api/delete' , {name: stock})
     .then((res) => {
 
       if(res.data === 'NotDeleted'){
@@ -85,13 +88,12 @@ class Main extends React.Component{
       } else {
         console.log('post to remove item response', res);
         let updatedData = this.state.data;
-        delete updatedData[removeItem.toUpperCase()];
-        //console.log("data", data);
+        delete updatedData[item];
 
-        let remove = (array, item) => {
-          return array.filter((e) => e !==  item);
+        let remove = (array, stock) => {
+          return array.filter((e) => e !==  stock);
         }
-        let updatedStocks = remove(list, removeItem);
+        let updatedStocks = remove(list, stock);
         console.log('updatedStocks', updatedStocks);
         this.setState({stocks: updatedStocks, data: updatedData});
       }
@@ -158,7 +160,7 @@ class Main extends React.Component{
                   <div className='input-group mb-3'>
                     <input type='text' className="form-control" value={this.state.input} maxLength="10" pattern='[A-Za-z]+' aria-label='Add a stock' aria-describedby='basic-addon2' onChange={this.handleChange} />
                       <div className='input-group-append'>
-                        <button className='btn btn-outline-secondary' type='button' onClick={this.handleSubmit}>&nbsp;+&nbsp;</button>
+                        <button className='btn btn-outline-secondary' onClick={this.handleSubmit}>&nbsp;+&nbsp;</button>
                       </div>
                     </div>
                 </form>
@@ -168,19 +170,7 @@ class Main extends React.Component{
 
           {listData.map((item, index) => {
             return (
-              <div className='col-lg-4 col-md-6 col-sm-12 section' key={index} >
-                <div className="card bg-light mb-3" >
-                  <div className="modal-header">
-                  <h5 className="modal-title">{item.quote.symbol}</h5>
-                  <button type="button"  className="close" aria-label="Close" onClick={() => this.delete(index)} data-toggle="close">
-                    <span aria-hidden="true" >&times;</span>
-                  </button>
-                </div>
-                  <div className="card-body">
-                    <p className="card-title">{item.quote.companyName}</p>
-                  </div>
-                </div>
-              </div>
+              <Stock key={item.quote.symbol} name={item.quote.symbol} data={item.quote.companyName} item={item.quote.symbol} onClick={this.deleteEntry.bind(this)}/>
             );
           })}
 
