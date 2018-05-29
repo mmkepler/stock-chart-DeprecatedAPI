@@ -10,7 +10,7 @@ const Stock = (props) => {
       <div className="card bg-light mb-3" >
         <div className="modal-header">
         <h5 className="modal-title">{name}</h5>
-        <button   className="close" aria-label="Close" onClick={() => props.onClick(props.item)} data-toggle="close">
+        <button   className="close" aria-label="Close" onClick={() => props.onClick(props.name)} data-toggle="close">
           <span aria-hidden="true" >&times;</span>
         </button>
       </div>

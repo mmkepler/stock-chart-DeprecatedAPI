@@ -1,7 +1,10 @@
 import React from 'react';
 import axios from 'axios';
-import * as d3 from "d3";
 import Stock from './Stock';
+import Chart from './Chart';
+import FusionCharts from 'fusioncharts';
+import Charts from 'fusioncharts/fusioncharts.charts';
+import ReactFC from 'react-fusioncharts';
 
 
 class Main extends React.Component{
@@ -10,7 +13,7 @@ class Main extends React.Component{
 
     this.state = {
       stocks: [],
-      data: {},
+      data: [],
       input: '',
       original: true,
       message: ''
@@ -55,9 +58,9 @@ class Main extends React.Component{
         var currentStocks = [...this.state.stocks[0]];
         var currentData = this.state.data;
         let dataValue = res.data; 
-        
+        console.log("checkin data", dataValue);
         currentStocks.push(newStock);
-        Object.assign(currentData, dataValue);
+        currentData.push(dataValue);
         this.setState({stocks: currentStocks, data: currentData, message: ''}, () => console.log("on return from /api/search the array of state", this.state));
 
       }
@@ -75,7 +78,7 @@ class Main extends React.Component{
     let stock = item;
     //document.activeElement.blur();
     //let index = key;
-    let list = this.state.stocks;
+    let list = this.state.stocks[0];
     console.log('delete list', list);
     //let removeItem = list[index];
     //console.log('remove item', removeItem);
@@ -87,15 +90,22 @@ class Main extends React.Component{
         this.setState({message: 'Error. Please refresh and try again.'});
       } else {
         console.log('post to remove item response', res);
-        let updatedData = this.state.data;
-        delete updatedData[item];
+      
 
         let remove = (array, stock) => {
           return array.filter((e) => e !==  stock);
         }
         let updatedStocks = remove(list, stock);
-        console.log('updatedStocks', updatedStocks);
-        this.setState({stocks: updatedStocks, data: updatedData});
+        let updatedData = this.state.data;
+        for(var i = 0; i < updatedData.length; i++){
+          console.log(updatedData[i]);
+          if(updatedData[i].hasOwnProperty(stock)){
+            console.log('yes');
+            updatedData.splice(i, 1);
+          }
+        }
+        console.log('updatedData', updatedData);
+        this.setState({stocks: updatedStocks, data: updatedData}, console.log("update in delete", this.state));
       }
       
       
@@ -107,6 +117,11 @@ class Main extends React.Component{
     });
 
   }
+
+
+
+
+  
 
 
    componentDidMount() {
@@ -134,15 +149,17 @@ class Main extends React.Component{
 
   render(){
     var list = this.state.data;
-    var listData = Object.keys(list).map(i => list[i]);
+    //var listData = Object.keys(list).map(i => list[i]);
+    //console.log("listData", listData);
     var message = this.state.message;
+  
 
-    console.log("listData in render function", listData);
+    console.log("listData in render function", list);
     return(
       <div className="main-body">
       <div className='jumbotron'>
         <div className='chart'>
-          Chart Stuff goes here
+          {<Chart stocks={this.state.data} width={'100%'}  height={'100%'} margins={'20px'}/>}
         </div>
         </div>
         <div className='message'>
@@ -168,9 +185,13 @@ class Main extends React.Component{
               </div>
           </div>
 
-          {listData.map((item, index) => {
+          {list.map((item, index) => {
+            let name = Object.keys(item);
+            let companyName = item[name].quote.companyName;
+            
+
             return (
-              <Stock key={item.quote.symbol} name={item.quote.symbol} data={item.quote.companyName} item={item.quote.symbol} onClick={this.deleteEntry.bind(this)}/>
+              <Stock key={name} name={name} data={companyName}  onClick={this.deleteEntry.bind(this)}/>
             );
           })}
 

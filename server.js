@@ -87,9 +87,25 @@ app.post('/api/data', (req, res) => {
   //console.log(temp);
   axios.get(temp)
   .then((data) => {
-    let items = data.data;
+    let arr = [];
+    //console.log("data try", data.data);
+    let info = data.data;
+    //console.log('info', info);
+    for(var i in info){
+      let item = {};
+      //item[info[i]]
+      //item[i] = info[i]
+      //console.log('item in loop', item);
+      //console.log(info[i]);
+      //arr.push(item[i])
+      //console.log("inside info", info[i]);
+      item[info[i].quote.symbol] = info[i];
+      arr.push(item);
+    }
+    console.log("New Array to hold objects", arr);
+    //let items = data.data;
     //console.log(items);
-    res.send(items);
+    res.send(arr);
   })
   .catch((err) => console.log(err));
 
