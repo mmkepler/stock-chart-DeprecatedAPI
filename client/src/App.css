@@ -1,3 +1,4 @@
+/*Main App*/
 
 body{
   height: 100%;
@@ -5,6 +6,7 @@ body{
   text-align: center;
   box-sizing: border-box;
 }
+
 .App {
   text-align: center;
   margin-top: 40px;
@@ -12,29 +14,6 @@ body{
 
 .jumbotron {
  margin-bottom: 0;
-}
-
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 60px;
-  line-height: 60px;
-  background-color: #f5f5f5;
-  color: black;
-}
-
-.navbar {
-  display: inline-block;
-  width: 100%;
-  
-}
-
-/* input */
-.mb-3 {
-  margin: auto;
-  width: 80%;
-  margin-bottom: -0rem !important;
 }
 
 .main-body {
@@ -49,18 +28,32 @@ body{
   min-height: 20px;
   margin: 10px;
 }
+
 .message p {
  font-size: 20px;
  margin: 0;
 }
+
+/*Header*/
+
+.navbar {
+  display: inline-block;
+  width: 100%;
+}
+
+/*Cards*/
 
 .card-title {
   margin: 0;
   height: 34px;
 }
 
-.add {
-  padding: 20px;
+/*Input*/
+
+.mb-3 {
+  margin: auto;
+  width: 80%;
+  margin-bottom: -0rem !important;
 }
 
 form {
@@ -79,7 +72,23 @@ button.btn.btn-outline-secondary {
   padding: 8px 10px;
 }
 
+/*Footer*/
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  line-height: 60px;
+  background-color: #f5f5f5;
+  color: black;
+}
 
 .footer-text {
   margin: 0;
 }
+
+
+
+
+

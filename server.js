@@ -72,9 +72,11 @@ app.get('/api/stocks', (req, res) => {
 
     //console.log("data", data);
     for(var i = 0; i < data.length; i++){
-      temp.push(data[i].name)
+      //console.log(data[i].name);
+      let item = data[i].name.toString();
+      temp.push(item);
     }
-    //console.log("response", temp);
+    console.log("response", temp);
 
     res.send(temp);
   });  
@@ -83,28 +85,23 @@ app.get('/api/stocks', (req, res) => {
 
 
 app.post('/api/data', (req, res) => {
-  let temp = makeUrl(req.body[0]);
-  //console.log(temp);
+  console.log("req body" , req.body)
+  let temp = makeUrl(req.body);
+  //console.log("url", temp);
   axios.get(temp)
   .then((data) => {
+
     let arr = [];
-    //console.log("data try", data.data);
     let info = data.data;
-    //console.log('info', info);
+
     for(var i in info){
       let item = {};
-      //item[info[i]]
-      //item[i] = info[i]
-      //console.log('item in loop', item);
-      //console.log(info[i]);
-      //arr.push(item[i])
-      //console.log("inside info", info[i]);
-      item[info[i].quote.symbol] = info[i];
+      
+      item.symbol = info[i].quote.symbol;
+      item.companyName = info[i].quote.companyName;
+      item.charts = info[i].chart;
       arr.push(item);
     }
-    console.log("New Array to hold objects", arr);
-    //let items = data.data;
-    //console.log(items);
     res.send(arr);
   })
   .catch((err) => console.log(err));
@@ -142,7 +139,7 @@ app.post('/api/search', (req,res) => {
       //console.log("url", url);
       axios.get(url)
       .then((item) => {
-        console.log('item', item.data.quote.symbol);
+        //console.log('item', item);
         
         var newStock = new Stocks();
         newStock.name = temp;
@@ -154,14 +151,14 @@ app.post('/api/search', (req,res) => {
           console.log("saved single");
           
         });
-
-        let newName = item.data.quote.symbol;
-       
-        let newObj = {};
-        newObj[newName] = item.data;
-        console.log('new', newObj);
+        let obj = {};
+        let name = item.data.quote.symbol;
+        obj.symbol = name;
+        obj.companyName = item.data.quote.companyName;
+        obj.chart = item.data.chart;
+        console.log('new', obj);
           
-        res.send(newObj);
+        res.send(obj);
       })
       .catch((err) => {
         console.log(err);
@@ -174,14 +171,13 @@ app.post('/api/search', (req,res) => {
 
 
 
-app.post('/api/delete', (req, res) => {
+app.post("/api/delete", (req, res) => {
   console.log("delete", req.body.name);
   let removeItem = {};
-  let name = 'name';
+  let name = "name";
   removeItem[name] = req.body.name;
   console.log(removeItem);
   Stocks.deleteOne(removeItem, (err) => {
-    console.log("if err in delete", err);
     if(err){
       console.log("deleting error", err);
       res.send("NotDeleted")

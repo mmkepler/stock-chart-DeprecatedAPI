@@ -4,7 +4,6 @@ const Stock = (props) => {
   //console.log(props);
   const name = props.name;
   const data = props.data;
-  const index = props.place;
   return(
     <div className='col-lg-4 col-md-6 col-sm-12 section'>
       <div className="card bg-light mb-3" >
