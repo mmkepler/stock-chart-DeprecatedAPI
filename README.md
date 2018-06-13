@@ -2,6 +2,8 @@
 
 This started out as a Free Code Camp project, but they redid all the requirements while I was working ont this.
 
+### Project Can Be Seen [Here](https://stock-.herokuapp.com/)
+
 ### Author:
 Missarchnid, A.K.A. Melissa Kepler
 
