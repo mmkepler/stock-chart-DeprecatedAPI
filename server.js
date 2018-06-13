@@ -32,7 +32,7 @@ mongoose.connection.on('connected', function () {
   console.log('Mongoose is connected');
 });
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 5002;
 
 app.listen(port, () => {
   console.log(`Server listening on ${port}`);
