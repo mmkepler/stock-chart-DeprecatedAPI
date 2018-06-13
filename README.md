@@ -22,7 +22,7 @@ Missarchnid, A.K.A. Melissa Kepler
 *  axios
 * HighStock from HighCharts
 
-### What Does It Do>
+### What Does It Do
 
 *  Users can add upto 5 stocks and see the price fluctuations over the past year.
 *  Stocks users add are added to an mlab database.
