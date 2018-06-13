@@ -1,93 +1,104 @@
 import React from 'react';
 import axios from 'axios';
 import Stock from './Stock';
-//import ReactHighstock from 'react-highcharts/ReactHighstock.src';
-//import Highlight from 'react-highlight';
-
+import ReactHighstock from 'react-highcharts/ReactHighstock.src';
+import chartConfig from '../chartConfig';
 
 
 class Main extends React.Component{
   constructor(props){
     super(props);
-
     this.state = {
       stocks: [],
-      data: [],
+      stockData: [],
+      count: 0,
       input: '',
       original: true,
       message: ''
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    
+    this.deleteEntry = this.deleteEntry.bind(this);
   }
-
 
 //============================
 // Helper Functions ==========
   handleChange(e) {
-    this.setState({input: e.target.value}, () => console.log("input", this.state.input));
+    this.setState({input: e.target.value}, () => console.log('input', this.state.input));
   }
-
 
   handleSubmit(e) {
-    /*  When data is sent back: error, fake, object, yes; make sure error in db has its message*/
-    e.preventDefault();
-    var newStock = (this.state.input).toUpperCase().replace(/ /g,'');
-    this.setState({input: ''});
-    console.log('input submitted new Stock', newStock);
-    console.log('typeof newStock after search', typeof newStock);
-    axios.post('/api/search', {data: newStock})
-    .then((res) => {
-      console.log("search result for newStock", res.data);
-
-      if(res.data === 'yes'){
-        this.setState({message: 'This stock has already been added'});
-        console.log('does exist');
-      }else if(res.data === "fake"){
-        console.log("is not real");
-        this.setState({message: 'This stock symbol does not exist'})
-      }else if(res.data === "error"){
-        console.log("error retrieving or saving");
+    /*When data is sent back: error, fake, object, yes; make sure error in db has its message*/
+    /*Test if I need this*/e.preventDefault();
+    let count = this.state.count;
+      if(count < 5) {
+      var newStock = (this.state.input).toUpperCase().replace(/ /g,'');
+      this.setState({input: ''});
+      let num = this.state.count;
+      axios.post('/api/search', {name: newStock, count: num})
+      .then((res) => {
+        if(res.data === 'yes'){
+          this.setState({message: 'This stock has already been added'});
+        }else if(res.data === 'fake'){
+          this.setState({message: 'This stock symbol does not exist'})
+        }else if(res.data === 'error'){
+          this.setState({message: 'Error. Please refresh and try again.'});
+        }else{
+          let newCount = this.state.count;
+          newCount++;
+          let available = this.findIndex(this.state.stockData);
+          let stockState = this.state.stocks;
+          let dataState = this.state.stockData;
+          let newStock = {};
+          let newData = {};
+          let chartArr = [];
+          newStock.name = res.data.quote.symbol;
+          newStock.companyName = res.data.quote.companyName;
+         
+          for(let i = 0; i < res.data.chart.length; i++) {
+            let tempArr = [];
+            let close = res.data.chart[i].close
+            let date = res.data.chart[i].date;
+            let mili = Date.parse(date);
+            tempArr.push(mili);
+            tempArr.push(close);
+            chartArr.push(tempArr);
+          }
+          newData.name = res.data.quote.symbol;
+          newData.data = chartArr;
+          newData._colorIndex = available;
+          newData._symbolIndex = available;
+          stockState.push(newStock);
+          dataState.push(newData);
+          this.setState({stocks: stockState, stockData: dataState, message: '', count: newCount});
+        }
+      })
+      .catch((err) => {
+        console.log('err in single request search', err);
         this.setState({message: 'Error. Please refresh and try again.'});
-      }else{
-        console.log("doesn't exist");
-        var currentStocks = this.state.stocks;
-        var currentData = this.state.data;
-        let dataValue = res.data; 
-        console.log("checkin data", dataValue);
-        currentStocks.push(newStock);
-        currentData.push(dataValue);
-        this.setState({stocks: currentStocks, data: currentData, message: ''}, () => console.log("on return from /api/search the array of state", this.state));
-      }
-    })
-    .catch((err) => {
-      console.log("err in single request search", err);
-      this.setState({message: 'Error. Please refresh and try again.'});
-    });
+      });
+    } else {
+      this.setState({input: '', message: 'You can only display 5 stocks'});
+    }
   }
 
-
   deleteEntry(item){
-    console.log('delete item', item)
     let stock = item;
     axios.post('/api/delete' , {name: stock})
     .then((res) => {
       if(res.data === 'NotDeleted'){
         this.setState({message: 'Error. Please refresh and try again.'});
       } else {
-        console.log('post to remove item response', res);
         let stockList = this.state.stocks;
-        let dataList = this.state.data;
-        let remove = (array, stock) => {
-          return array.filter((e) => e !==  stock);
-        }
+        let dataList = this.state.stockData;
+        let newCount = this.state.count;
+        newCount = newCount - 1;
         let removeObj = (array, stock) => {
-          return array.filter((e) => e.symbol !== stock);
+          return array.filter((e) => e.name !== stock);
         }
-        let updatedStocks = remove(stockList, stock);
+        let updatedStocks = removeObj(stockList, stock);
         let updatedData = removeObj(dataList, stock)
-        this.setState({stocks: updatedStocks, data: updatedData}, console.log("update in delete", this.state));
+        this.setState({stockData: updatedData, stocks: updatedStocks, count: newCount, message: ''});
       }
     })
     .catch((err) => {
@@ -96,71 +107,106 @@ class Main extends React.Component{
     });
   }
 
+  findIndex(arr) {
+    let all = [0, 1, 2, 3, 4];
+    let taken = [];
+    for(let i = 0; i < arr.length; i++) {
+      taken.push(arr[i]._colorIndex);
+    }
+    let free = all.filter((item) => {
+      return taken.indexOf(item) === -1;
+    });
+    return free[0];
+  }
+  //============================
+// Helper Functions End ==========
 
-   componentDidMount() {
-     //Load data from db for setState after Mount
-     if(this.state.original === true){
-     axios.get('/api/stocks')
+  componentDidMount() {
+    //Load data from db for setState after Mount
+    if(this.state.original === true){
+      axios.get('/api/stocks')
       .then((res) => {
-        var names = res.data;
-        console.log("names array", names);
-        this.setState({stocks: names, original: false}, () => console.log("state set stocks in CDM", this.state.stocks));
-        return names
+        //create objects for stocks state
+        let stockArr = [];
+        let stockCount = 0;
+        let dataState = res.data;
+        let dataArr = []; 
+        //create stock state objects from response data
+        for(let i in dataState) {
+          let tempStock = {};
+          tempStock.name = dataState[i].quote.symbol;
+          tempStock.companyName = dataState[i].quote.companyName;
+          stockArr.push(tempStock);
+        }
+        //create stockData state objects from response data
+        for(let j in dataState) {
+          let tempData = {};
+          let chartArr = [];
+          let dataChart = dataState[j].chart;
+          tempData.name = dataState[j].quote.symbol;
+          tempData._colorIndex = stockCount;
+          tempData._symbolIndex = stockCount;
+          //change date into miliseconds 
+          for(let k = 0; k < dataChart.length; k++) {
+            let tempArr = [];
+            let close = dataChart[k].close;
+            let date = dataChart[k].date;
+            let mili = Date.parse(date);
+            tempArr.push(mili);
+            tempArr.push(close);
+            chartArr.push(tempArr);
+          }
+          tempData.data = chartArr;
+          dataArr.push(tempData);
+          stockCount++;
+        }
+        this.setState({ stocks: stockArr, stockData: dataArr, count: stockCount, original: false});
       })
-      .then((names) => {
-        axios.post('/api/data', names)
-        .then((info) => {
-          //console.log(info.data);
-          this.setState({data: info.data}, () => {console.log("state set data in CDM", this.state.data)});
-        })
-        .catch((err) => console.log('err in post to /api/data', err));
-      });
-     }
-    /* Make sure to add the updated chart here */
-    
-	}
+      .catch((err) => console.log('error requesting data from /api/stocks', err));
+    }
+  }
 
   render(){
-    var list = this.state.data;
+    let stockList = this.state.stocks;
+    chartConfig.series = this.state.stockData;
     var message = this.state.message;
-    console.log("listData in render function", list);
     return(
-      <div className="main-body">
+      <div className='main-body'>
       <div className='jumbotron'>
         <div className='chart'>
-          {/*<ReactHighstock config={config}></ReactHighstock>*/}
+          <ReactHighstock config={chartConfig}></ReactHighstock>
+          <p className='iex'>Data provided by <a href='https://iextrading.com/developer/'>IEX</a></p>
+          <div className='message'>
+            <p>{message}</p>
         </div>
         </div>
-        <div className='message'>
-        <p>{message}</p>
-        </div>
-        <div className="row">
+        
+      </div>
+        <div className='row'>
           <div className='col-lg-4 col-md-6 col-sm-12 section' >
-            <div className="card bg-light mb-3" >
-              <div className="modal-header">
-                  <h5 className="modal-title">Add a Stock</h5>
-                </div>
-              <div className="card-body">
+            <div className='card bg-light mb-3'>
+              <div className='modal-header'>
+                  <p className='modal-title input-title'>Add a Stock</p>
+              </div>
+              <div className='card-body'>
                 <form  id='input'>
                   <div className='input-group mb-3'>
-                    <input type='text' className="form-control" value={this.state.input} maxLength="10" pattern='[A-Za-z]+' aria-label='Add a stock' aria-describedby='basic-addon2' onChange={this.handleChange} />
+                    <input aria-label='Add a stock' type='text' className='form-control' value={this.state.input} maxLength='10' pattern='[A-Za-z]+'  onChange={this.handleChange} />
                       <div className='input-group-append'>
-                        <button className='btn btn-outline-secondary' onClick={this.handleSubmit}>&nbsp;+&nbsp;</button>
+                        <button aria-label='submit new stock' className='btn btn-outline-secondary' onClick={this.handleSubmit}>&nbsp;+&nbsp;</button>
                       </div>
                     </div>
                 </form>
               </div>
               </div>
           </div>
-
-          {list.map((item, index) => {
-            let symbol = item.symbol;
+          {stockList.map((item, index) => {
+            let symbol = item.name;
             let companyName = item.companyName;
             return (
-              <Stock key={symbol} name={symbol} data={companyName}  onClick={this.deleteEntry.bind(this)}/>
+              <Stock key={symbol} name={symbol} data={companyName}  onClick={this.deleteEntry}/>
             );
           })}
-
         </div>
       </div>
     );
@@ -168,20 +214,3 @@ class Main extends React.Component{
 }
 
 export default Main;
-/* 
-
-Fixed the issue with the array,
-issue with the delete func, data is in variables that have to run a function, and I have the setState as the next thing. It console logs
-right after the setting that it is the same as it was, then it updates in the render function console. 
-
-
-
-Issues to check:
-1. does the delay in the delete setState make a difference?
-2. Are the correct messages showing, does the function end after?
-3. Can I work on speed
-4. Clean up CSS - Make look nicer
-5. Create Chart - Look at the pasta guys code
-6. 
-
-*/

@@ -20,8 +20,7 @@
     "http": "0.0.0",
     "mongodb": "^3.0.6",
     "mongoose": "^5.0.15",
-    "path": "^0.12.7",
-    "socket.io": "^2.1.1"
+    "path": "^0.12.7"
   },
   "repository": {
     "type": "git",
@@ -31,6 +30,6 @@
     "node": "9.6.1"
   },
   "devDependencies": {
-    "nodemon": "^1.17.5"
+    "concurrently": "^3.5.1"
   }
 }

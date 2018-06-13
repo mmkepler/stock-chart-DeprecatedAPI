@@ -2,8 +2,10 @@ import React from 'react';
 
 const Header = () => {
   return(
-    <nav className="navbar navbar-light bg-light">
-      <a className="navbar-brand" href="/">Watch the Stock Market</a>
+    <nav className='navbar'>
+      <h1>
+        <a className='navbar-brand' href='/'>Stock Price History</a>
+      </h1>
     </nav>
   );
 }

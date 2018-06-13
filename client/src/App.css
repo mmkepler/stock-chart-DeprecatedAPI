@@ -5,28 +5,34 @@ body{
   width: 100%;
   text-align: center;
   box-sizing: border-box;
+  font-family: 'Droid Serif', sans-serif;
+  background-color: black;
 }
 
-.App {
-  text-align: center;
-  margin-top: 40px;
+.main-content {
+  margin-bottom: 90px;
 }
 
 .jumbotron {
- margin-bottom: 0;
+  margin-bottom: 30px;
+  padding-bottom: 0;
+  background-color: #8cd9c6;
+}
+
+.iex {
+  margin: 0;
+  padding: 6px 0 6px 0;
 }
 
 .main-body {
   margin-top: 40px;
 }
 
-.section {
-  margin-bottom: 10px;
-}
-
 .message {
-  min-height: 20px;
-  margin: 10px;
+  min-height: 30px;
+  font-size: 16px;
+  margin-top: 0;
+  padding-bottom: 6px;
 }
 
 .message p {
@@ -35,26 +41,48 @@ body{
 }
 
 /*Header*/
-
-.navbar {
-  display: inline-block;
+nav {
+  background-color: #8cd9c6;
+  height: 64px;
   width: 100%;
 }
 
+.navbar {
+  display: inline-block;
+ 
+}
+.navbar-brand {
+  color: black;
+  font-size: 1.6rem;
+}
+
+
 /*Cards*/
+.card-symbol, .input-title {
+  font-size: 1.2rem;
+}
 
 .card-title {
   margin: 0;
   height: 34px;
 }
-
-/*Input*/
+.modal-header {
+  background-color: #8cd9c6;
+}
+.card-body {
+  background-color: white;
+}
+.section {
+  margin: 10px auto 10px auto;
+}
 
 .mb-3 {
   margin: auto;
   width: 80%;
   margin-bottom: -0rem !important;
 }
+
+/*Input*/
 
 form {
   margin: auto;
@@ -75,20 +103,20 @@ button.btn.btn-outline-secondary {
 /*Footer*/
 
 .footer {
-  position: absolute;
-  bottom: 0;
   width: 100%;
-  height: 60px;
-  line-height: 60px;
-  background-color: #f5f5f5;
+  background-color: #8cd9c6;
   color: black;
+  padding: 10px;
 }
 
 .footer-text {
+  font-size: 20px;
+  padding: 0;
   margin: 0;
 }
 
-
-
-
+.github {
+  height: 20px;
+  margin: 0 24px;
+}
 

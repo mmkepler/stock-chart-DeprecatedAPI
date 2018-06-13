@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 
 var stockSchema = mongoose.Schema({
-  name: String
+  name: String,
+  companyName: String
 });
 
-module.exports = mongoose.model('Stocks', stockSchema);
+module.exports = mongoose.model('stockList', stockSchema);
+
