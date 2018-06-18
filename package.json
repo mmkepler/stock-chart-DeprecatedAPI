@@ -22,7 +22,8 @@
     "http": "0.0.0",
     "mongodb": "^3.0.6",
     "mongoose": "^5.0.15",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "react-loader": "^2.4.5"
   },
   "repository": {
     "type": "git",

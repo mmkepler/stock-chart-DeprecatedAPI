@@ -3,6 +3,7 @@ import axios from 'axios';
 import Stock from './Stock';
 import ReactHighstock from 'react-highcharts/ReactHighstock.src';
 import chartConfig from '../chartConfig';
+var Loader = require('react-loader');
 
 
 class Main extends React.Component{
@@ -14,7 +15,8 @@ class Main extends React.Component{
       count: 0,
       input: '',
       original: true,
-      message: ''
+      message: '',
+      loaded: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -160,7 +162,7 @@ class Main extends React.Component{
           dataArr.push(tempData);
           stockCount++;
         }
-        this.setState({ stocks: stockArr, stockData: dataArr, count: stockCount, original: false});
+        this.setState({ stocks: stockArr, stockData: dataArr, count: stockCount, original: false, loaded: true});
       })
       .catch((err) => console.log('error requesting data from /api/stocks', err));
     }
@@ -172,6 +174,7 @@ class Main extends React.Component{
     var message = this.state.message;
     return(
       <div className='main-body'>
+      <Loader loaded={this.state.loaded}/>
       <div className='jumbotron'>
         <div className='chart'>
           <ReactHighstock config={chartConfig}></ReactHighstock>
