@@ -2,7 +2,7 @@
 
 This started out as a Free Code Camp project, but they redid all the requirements while I was working ont this.
 
-### Project Can Be Seen [Here](https://stock-3752.herokuapp.com)
+### This project's API changed. I will return to it later to update it. For now only the code is available.
 
 ### Author:
 Missarchnid, A.K.A. Melissa Kepler
