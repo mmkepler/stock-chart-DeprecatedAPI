@@ -1,4 +1,4 @@
-#  Stock Market Charting App
+#  Stock Market Charting App - No longer hosted, code only
 
 This started out as a Free Code Camp project, but they redid all the requirements while I was working ont this.
 
